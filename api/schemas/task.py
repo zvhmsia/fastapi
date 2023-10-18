@@ -1,9 +1,15 @@
 from typing import Optional
+from datetime import date
 
 from pydantic import BaseModel, Field
 
 class TaskBase(BaseModel):
     title: Optional[str] = Field(None, example="クリーニングを取りに行く")
+    start_date: Optional[date] = Field(default_factory=date.today)
+    start_schedule_date: Optional[date] = Field(default_factory=date.today)
+    fin_date: Optional[date] = Field(default_factory=date.today)
+    fin_schedule_date: Optional[date] = Field(default_factory=date.today)
+    user_name: Optional[str] = Field(None, example="廣石健悟")
 
 class TaskCreate(TaskBase):
     pass

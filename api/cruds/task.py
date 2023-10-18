@@ -2,7 +2,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 import api.models.task as task_model
 import api.schemas.task as task_schema
-
+from datetime import date
+import ast
 from typing import List, Tuple, Optional
 
 from sqlalchemy import select
@@ -17,9 +18,10 @@ async def create_task(
     db.add(task)
     await db.commit()
     await db.refresh(task)
+    
     return task
 
-async def get_tasks_with_done(db: AsyncSession) -> List[Tuple[int, str, bool, bool, bool]]:
+async def get_tasks_with_done(db: AsyncSession) -> List[Tuple[int, str, bool, bool, bool, date, date, date, date]]:
     result: Result = await (
         db.execute(
             select(
@@ -28,6 +30,11 @@ async def get_tasks_with_done(db: AsyncSession) -> List[Tuple[int, str, bool, bo
                 task_model.Done.id.isnot(None).label("done"),
                 task_model.Waiting.id.isnot(None).label("waiting"),
                 task_model.Working.id.isnot(None).label("working"),
+                task_model.Task.start_date,
+                task_model.Task.start_schedule_date,
+                task_model.Task.fin_date,
+                task_model.Task.fin_schedule_date,
+                task_model.Task.user_name,
             ).outerjoin(task_model.Done).outerjoin(task_model.Waiting).outerjoin(task_model.Working)
         )
     )
